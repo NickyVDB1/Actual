@@ -1,5 +1,5 @@
-const express = require('express');
-const fetchBudgetData = require('./fetchBudget.mjs').default;
+import express from 'express';
+import fetchBudgetData from './fetchBudget.mjs';
 
 const app = express();
 
