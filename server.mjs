@@ -1,5 +1,5 @@
 import express from 'express';
-import fetchBudgetData from './fetchBudget.mjs';
+import fetchBudgetData from './fetchBudget.mjs'; // Use the dynamic import here
 
 const app = express();
 

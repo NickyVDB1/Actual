@@ -1,19 +1,15 @@
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
-import express from 'express';
 import actualAPI from '@actual-app/api';
 import { performance } from 'perf_hooks';
 
 dotenv.config();
 
-const app = express();
-const port = process.env.PORT || 8080;
-
-app.get('/budget', async (req, res) => {
+export default async function fetchBudgetData() {
   const startTime = performance.now();
   try {
     await actualAPI.init({
-      dataDir: 'C:\\Users\\vanden2\\OneDrive\\Documenten\\Hobbies\\Actualbudget\\budgetdata',
+      dataDir: process.env.DATA_DIR, // Use environment variable for path
       serverURL: process.env.SERVER_URL,
       password: process.env.PASSWORD,
     });
@@ -37,13 +33,9 @@ app.get('/budget', async (req, res) => {
     const endTime = performance.now();
     console.log(`Budget fetching took ${endTime - startTime} milliseconds`);
 
-    res.json(budget);
+    return budget;
   } catch (error) {
     console.error('Error fetching budget data:', error);
-    res.status(500).send('Error fetching budget data: ' + error.message);
+    throw new Error('Error fetching budget data: ' + error.message);
   }
-});
-
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+}
