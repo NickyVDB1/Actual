@@ -6,10 +6,23 @@ import actualAPI from '@actual-app/api';
 
 dotenv.config();
 export default async function fetchAllBudgetData() {
-  const startTime = performance.now();
-  try {
-    await initializeAPI();
-
+    const startTime = performance.now();
+    try {
+      await initializeAPI();
+  
+      const budgetId = process.env.BUDGET_ID;
+      const encryptionPassword = process.env.ENCRYPTION_PASSWORD;
+  
+      if (!budgetId) {
+        throw new Error('BUDGET_ID is not defined in environment variables');
+      }
+  
+      if (encryptionPassword) {
+        await actualAPI.downloadBudget(budgetId, { password: encryptionPassword });
+      } else {
+        await actualAPI.downloadBudget(budgetId);
+      }
+  
     // Fetch the list of budget months
     const budgetMonths = await actualAPI.getBudgetMonths();
     
