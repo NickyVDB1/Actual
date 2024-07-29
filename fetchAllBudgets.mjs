@@ -31,7 +31,7 @@ export default async function fetchAllBudgetData() {
     }
 
     // Perform parallel fetches for each month
-    const promises = budgetMonths.map(month => actualAPI.fetchBudgetMonth(month));
+    const promises = budgetMonths.map(month => actualAPI.getBudgetMonth(month));
     const allBudgets = await Promise.all(promises);
 
     await shutdownAPI();
