@@ -1,11 +1,11 @@
 import express from 'express';
-import fetchBudgetData from './fetchBudget.mjs'; // Use the dynamic import here
-import fetchBudgetForAllMonths from './fetchAllBudgets.mjs'
 
 const app = express();
 
+// Use dynamic import for fetchBudgetData
 app.get('/budget', async (req, res) => {
   try {
+    const { default: fetchBudgetData } = await import('./fetchBudget.mjs');
     let budget = await fetchBudgetData();
     res.json(budget);
   } catch (error) {
@@ -13,10 +13,12 @@ app.get('/budget', async (req, res) => {
   }
 });
 
+// Use dynamic import for fetchBudgetForAllMonths
 app.get('/budget/all', async (req, res) => {
   try {
+    const { default: fetchBudgetForAllMonths } = await import('./fetchAllBudgets.mjs');
     let allBudgets = await fetchBudgetForAllMonths();
-    res.json(allBudgets);
+    res.json(allBudgets); // Return the accumulated results as JSON
   } catch (error) {
     res.status(500).send(error.toString());
   }

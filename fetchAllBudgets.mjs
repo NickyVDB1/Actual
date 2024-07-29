@@ -1,43 +1,47 @@
-// fetchAllBudget.mjs
 import dotenv from 'dotenv';
-import { performance } from 'perf_hooks';
 import { initializeAPI, shutdownAPI } from './apiUtils.mjs';
 import actualAPI from '@actual-app/api';
 
 dotenv.config();
+
 export default async function fetchAllBudgetData() {
-    const startTime = performance.now();
-    try {
-      await initializeAPI();
-  
-      const budgetId = process.env.BUDGET_ID;
-      const encryptionPassword = process.env.ENCRYPTION_PASSWORD;
-  
-      if (!budgetId) {
-        throw new Error('BUDGET_ID is not defined in environment variables');
-      }
-  
-      if (encryptionPassword) {
-        await actualAPI.downloadBudget(budgetId, { password: encryptionPassword });
-      } else {
-        await actualAPI.downloadBudget(budgetId);
-      }
-  
-    // Fetch the list of budget months
-    const budgetMonths = await actualAPI.getBudgetMonths();
-    
-    if (!budgetMonths || budgetMonths.length === 0) {
-      throw new Error('No budget months found.');
+  try {
+    await initializeAPI();
+
+    const budgetId = process.env.BUDGET_ID;
+    const encryptionPassword = process.env.ENCRYPTION_PASSWORD;
+
+    if (!budgetId) {
+      throw new Error('BUDGET_ID is not defined in environment variables');
     }
 
-    // Perform parallel fetches for each month
-    const promises = budgetMonths.map(month => actualAPI.getBudgetMonth(month));
-    const allBudgets = await Promise.all(promises);
+    // Download the budget once
+    if (encryptionPassword) {
+      await actualAPI.downloadBudget(budgetId, { password: encryptionPassword });
+    } else {
+      await actualAPI.downloadBudget(budgetId);
+    }
+
+    // Fetch the list of budget months
+    const budgetMonths = await actualAPI.getBudgetMonths();
+    const allBudgets = [];
+
+    // Define the getBudgetMonth function
+    async function getBudgetMonth(month) {
+      return await actualAPI.getBudgetMonth(month);
+    }
+
+    // Loop through each month and fetch the budget
+    for (const month of budgetMonths) {
+      try {
+        const budgetMonth = await getBudgetMonth(month);
+        allBudgets.push(budgetMonth);
+      } catch (error) {
+        console.error(`Error fetching budget for month ${month}:`, error);
+      }
+    }
 
     await shutdownAPI();
-
-    const endTime = performance.now();
-    console.log(`Fetching all budget data took ${endTime - startTime} milliseconds`);
 
     return allBudgets;
   } catch (error) {
