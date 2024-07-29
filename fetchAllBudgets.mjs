@@ -33,7 +33,7 @@ async function fetchBudgetMonth(month) {
   }
 }
 
-export async function fetchAllBudgetData() {
+export default async function fetchAllBudgetData() {
   const startTime = performance.now();
   try {
     await initializeAPI();
