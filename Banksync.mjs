@@ -25,7 +25,7 @@ export default async function runBankSync() {
     }
     
 
-    await actualAPI.runBankSync("d8877ddf-8e9b-427a-a795-e387185b57ae");
+    await actualAPI.runBankSync(process.env.ACCOUNT_ID);
 
     await shutdownAPI();
   } catch (error) {
