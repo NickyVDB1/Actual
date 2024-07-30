@@ -1,8 +1,13 @@
 import express from 'express';
+import apiKeyMiddleware from './apiKeyMiddleware.js'; // Adjust the path as needed
 
 const app = express();
 
-// Use dynamic import for fetchBudgetData
+// Apply middleware to routes that require API key authorization
+app.use('/budget', apiKeyMiddleware);
+app.use('/budget/all', apiKeyMiddleware);
+app.use('/RunBanksync', apiKeyMiddleware);
+
 app.get('/budget', async (req, res) => {
   try {
     const { default: fetchBudgetData } = await import('./fetchBudget.mjs');
@@ -13,7 +18,6 @@ app.get('/budget', async (req, res) => {
   }
 });
 
-// Use dynamic import for fetchBudgetForAllMonths
 app.get('/budget/all', async (req, res) => {
   try {
     const { default: fetchBudgetForAllMonths } = await import('./fetchAllBudgets.mjs');

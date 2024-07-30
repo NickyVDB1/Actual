@@ -1,0 +1,14 @@
+
+const API_KEY = process.env.API_KEY; // Replace with your actual API key
+
+const apiKeyMiddleware = (req, res, next) => {
+  const apiKey = req.headers['x-api-key'] || req.query.api_key; // Check both header and query parameter
+
+  if (apiKey && apiKey === API_KEY) {
+    next(); // API key is valid, proceed to the route handler
+  } else {
+    res.status(401).json({ error: 'Unauthorized' }); // API key is invalid or missing
+  }
+};
+
+export default apiKeyMiddleware;

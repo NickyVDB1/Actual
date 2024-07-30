@@ -6,7 +6,6 @@ import actualAPI from '@actual-app/api';
 dotenv.config();
 
 export default async function fetchBudgetData() {
-  const startTime = performance.now();
   try {
     await initializeAPI();
 
@@ -25,9 +24,6 @@ export default async function fetchBudgetData() {
 
     let budget = await actualAPI.getBudgetMonth('2024-07');
     await shutdownAPI();
-
-    const endTime = performance.now();
-    console.log(`Budget fetching took ${endTime - startTime} milliseconds`);
 
     return budget;
   } catch (error) {
